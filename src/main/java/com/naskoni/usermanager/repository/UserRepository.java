@@ -1,0 +1,12 @@
+package com.naskoni.usermanager.repository;
+
+import com.naskoni.usermanager.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+
+  Optional<User> findByEmailAddress(String emailAddress);
+}

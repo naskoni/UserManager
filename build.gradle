@@ -1,0 +1,88 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.3'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id 'com.bmuschko.cargo-base' version '2.3'
+    id 'war'
+}
+
+
+group = 'com.naskoni'
+version = '1.0.0'
+sourceCompatibility = '14'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation 'io.springfox:springfox-bean-validators:2.9.2'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.2.5'
+    runtimeOnly 'com.h2database:h2:1.4.200'
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'com.google.code.gson:gson:2.8.6'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+import com.bmuschko.gradle.cargo.convention.Deployable
+import com.bmuschko.gradle.cargo.tasks.remote.CargoDeployRemote
+
+task deployToQA(type: CargoDeployRemote) {
+    containerId = 'tomcat9x'
+    hostname = 'host_qa'
+    port = 8080
+    username = 'username_qa'
+    password = 'password_qa'
+
+    deployables = [new Deployable(file: file('build/libs/usermanager-1.0.0.war'), context: 'usermanager')]
+}
+
+task deployToProd(type: CargoDeployRemote) {
+    containerId = 'tomcat9x'
+    hostname = 'host_prod'
+    port = 8080
+    username = 'username_prod'
+    password = 'password_prod'
+
+    deployables = [new Deployable(file: file('build/libs/usermanager-1.0.0.war'), context: 'usermanager')]
+}
+
+
+
